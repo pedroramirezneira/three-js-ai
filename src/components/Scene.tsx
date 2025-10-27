@@ -4,7 +4,7 @@ import * as THREE from "three";
 import Car from "./Car";
 import CameraFollow from "./CameraFollow";
 import { sendToN8n } from "../services/sendToN8n";
-import { prefabs } from "./Prefabs";
+import { prefabs, preloadAllPrefabs } from "./Prefabs";
 import Chat from "./Chat";
 import { buildAssembly } from "./Parts";
 import type { BuildInstruction } from "../types/types";
@@ -56,6 +56,10 @@ function Spawner({ instructions }: { instructions: BuildInstruction[] }) {
 }
 
 export default function Scene() {
+  useEffect(() => {
+    preloadAllPrefabs().catch(console.error);
+  }, []);
+
   const carRef = useRef<THREE.Group>(null);
   const [instructions, setInstructions] = useState<BuildInstruction[]>([]);
 

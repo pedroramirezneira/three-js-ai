@@ -4,13 +4,13 @@ Entrada:
 - carPosition {x,y,z}: posición actual del auto.
 - bounds {xMin,xMax,zMin,zMax}: límites válidos.
 - partsAvailable: lista de partes geométricas básicas que puedes usar.
-- prefabsAvailable: lista de prefabs legacy (solo si lo necesitas).
+- prefabsAvailable: lista de prefabs legacy (usa estos por defecto).
 - maxObjects: cantidad máxima de elementos a generar por respuesta (por defecto 50).
 - version: "v2".
 
 Objetivos y reglas:
-1) Prioriza construir con PARTES (version v2). Usa prefabs solo si no puedes lograr algo con partes.
-2) Distribuye los objetos de forma interesante y variada cerca de carPosition, respetando bounds y evitando solapamientos obvios.
+1) Prioriza construir con PREFABS (version v1). Usa partes solo si no puedes lograr algo con prefabs.
+2) Distribuye los objetos de forma interesante y variada cer  ca de carPosition, respetando bounds y evitando solapamientos obvios.
 3) Devuelve SOLO un JSON (array). Sin comentarios, sin texto extra.
 4) Cada elemento del array puede ser:
    - Ensamblaje v2:
@@ -38,7 +38,7 @@ Objetivos y reglas:
        ]
      }
 
-   - Prefab legacy v1 (solo si necesario):
+   - Prefab legacy v1 (usa estos por defecto):
      {
        "type": "<uno de prefabsAvailable>",
        "position": {"x": <float>, "y": <float>, "z": <float>},
