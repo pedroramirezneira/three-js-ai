@@ -18,6 +18,9 @@ export const prefabDefs: PrefabDef[] = [
   { name: "piedra plana", url: "/models/piedra_plana.glb", scale: 0.5 },
   { name: "señal", url: "/models/senal.glb", scale: 2 },
   { name: "cochecito", url: "/models/cochecito.glb", scale: 0.5 },
+  { name: "person_1", url: "/models/person_1.glb", scale: 50 },
+  { name: "person_2", url: "/models/person_2.glb", scale: 0.02 },
+  { name: "person_3", url: "/models/person_3.glb" },
 ] as const;
 
 export const prefabs: FilePrefab[] = prefabDefs.map((d) => ({
