@@ -43,7 +43,7 @@ const Car = forwardRef<THREE.Group, object>((_, ref) => {
       carRef.current;
 
   return (
-    <group ref={carRef} position={[0, 0.25, 0]}>
+    <group ref={carRef} position={[0, 0.4, 0]}>
       {/* Car body */}
       <mesh castShadow>
         <boxGeometry args={[1, 0.4, 2]} />
@@ -62,7 +62,7 @@ const Car = forwardRef<THREE.Group, object>((_, ref) => {
           <mesh
             key={`${x}-${z}`}
             position={[x, -0.2, z]}
-            rotation={[Math.PI / 2, 0, 0]}
+            rotation={[Math.PI / 2, 0, Math.PI / 2]}
           >
             <cylinderGeometry args={[0.2, 0.2, 0.1, 16]} />
             <meshStandardMaterial color="black" />
