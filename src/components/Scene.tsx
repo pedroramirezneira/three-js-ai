@@ -89,6 +89,32 @@ export default function Scene() {
           <planeGeometry args={[100, 100]} />
           <meshStandardMaterial color={"#7ac36a"} />
         </mesh>
+        {/* Colliders invisibles alrededor del plano */}
+        <group>
+          {/* Pared norte */}
+          <mesh position={[0, 0.5, -50]} visible={false}>
+            <boxGeometry args={[100, 1, 1]} />
+            <meshBasicMaterial />
+          </mesh>
+
+          {/* Pared sur */}
+          <mesh position={[0, 0.5, 50]} visible={false}>
+            <boxGeometry args={[100, 1, 1]} />
+            <meshBasicMaterial />
+          </mesh>
+
+          {/* Pared oeste */}
+          <mesh position={[-50, 0.5, 0]} visible={false}>
+            <boxGeometry args={[1, 1, 100]} />
+            <meshBasicMaterial />
+          </mesh>
+
+          {/* Pared este */}
+          <mesh position={[50, 0.5, 0]} visible={false}>
+            <boxGeometry args={[1, 1, 100]} />
+            <meshBasicMaterial />
+          </mesh>
+        </group>
       </Canvas>
 
       <Chat onSend={handleSend} />

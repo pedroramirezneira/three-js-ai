@@ -2,6 +2,13 @@ import { useFrame } from "@react-three/fiber";
 import { useRef, useState, useEffect, forwardRef } from "react";
 import * as THREE from "three";
 
+const BOUNDS = {
+  xMin: -50,
+  xMax: 50,
+  zMin: -50,
+  zMax: 50,
+};
+
 const Car = forwardRef<THREE.Group, object>((_, ref) => {
   const carRef = useRef<THREE.Group>(null);
   const [keys, setKeys] = useState<{ [key: string]: boolean }>({});
@@ -26,14 +33,34 @@ const Car = forwardRef<THREE.Group, object>((_, ref) => {
     const car = carRef.current;
     if (!car) return;
 
+    // Movimiento y rotación
     if (keys["ArrowLeft"]) car.rotation.y += rotationSpeed;
     if (keys["ArrowRight"]) car.rotation.y -= rotationSpeed;
 
     const direction = new THREE.Vector3();
     car.getWorldDirection(direction);
 
-    if (keys["ArrowUp"]) car.position.addScaledVector(direction, velocity);
-    if (keys["ArrowDown"]) car.position.addScaledVector(direction, -velocity);
+    const nextPos = car.position.clone();
+
+    if (keys["ArrowUp"]) nextPos.addScaledVector(direction, velocity);
+    if (keys["ArrowDown"]) nextPos.addScaledVector(direction, -velocity);
+
+    // Limitar dentro del plano
+    const halfWidth = 0.5;
+    const halfDepth = 1.0;
+
+    nextPos.x = THREE.MathUtils.clamp(
+      nextPos.x,
+      BOUNDS.xMin + halfWidth,
+      BOUNDS.xMax - halfWidth
+    );
+    nextPos.z = THREE.MathUtils.clamp(
+      nextPos.z,
+      BOUNDS.zMin + halfDepth,
+      BOUNDS.zMax - halfDepth
+    );
+
+    car.position.copy(nextPos);
   });
 
   // Asignamos ref externo si existe
@@ -44,6 +71,12 @@ const Car = forwardRef<THREE.Group, object>((_, ref) => {
 
   return (
     <group ref={carRef} position={[0, 0.4, 0]}>
+      {/* Collider visual opcional (para debug) */}
+      {/* <mesh>
+        <boxGeometry args={[1, 0.5, 2]} />
+        <meshBasicMaterial color="red" wireframe />
+      </mesh> */}
+
       {/* Car body */}
       <mesh castShadow>
         <boxGeometry args={[1, 0.4, 2]} />
