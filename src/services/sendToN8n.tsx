@@ -1,5 +1,6 @@
 import { prefabs } from "../components/Prefabs";
-import type { SpawnInstruction } from "../types/spawns";
+import { partsAvailable } from "../components/Parts";
+import type { BuildInstruction } from "../types/types";
 
 export async function sendToN8n(
   prompt: string,
@@ -8,8 +9,11 @@ export async function sendToN8n(
   const requestBody = {
     prompt,
     carPosition: carPos,
-    prefabsAvailable: prefabs.map((p) => p.name),
+    prefabsAvailable: prefabs.map((p) => p.name), // retrocompat
+    partsAvailable, // NUEVO
     bounds: { xMin: -50, xMax: 50, zMin: -50, zMax: 50 },
+    maxObjects: 50, // NUEVO
+    version: "v2", // NUEVO
   };
 
   const res = await fetch(
@@ -21,7 +25,6 @@ export async function sendToN8n(
     }
   );
 
-  const data: SpawnInstruction[] = await res.json();
-  console.log(data);
+  const data: BuildInstruction[] = await res.json();
   return data;
 }
