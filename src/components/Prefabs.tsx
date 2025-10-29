@@ -5,32 +5,42 @@ import {
   type PrefabDef,
 } from "../services/assetLoader";
 
-export type FilePrefab = { name: string; create: () => THREE.Group };
+// Importa automáticamente todos los modelos GLB de src/models (recursivo)
+const modules = import.meta.glob("../models/**/*.glb", {
+  eager: true,
+  as: "url",
+});
 
-export const prefabDefs: PrefabDef[] = [
-  { name: "árbol", url: "/models/arbol.glb", scale: 0.035 },
-  { name: "roca", url: "/models/roca.glb", scale: 0.5 },
-  { name: "arbusto", url: "/models/arbusto.glb", scale: 0.005 },
-  { name: "cactus", url: "/models/cactus.glb", scale: 10 },
-  { name: "caja", url: "/models/caja.glb" },
-  { name: "barril", url: "/models/barril.glb", scale: 0.25, yOffset: 1 },
-  { name: "farol", url: "/models/farol.glb" },
-  { name: "piedra plana", url: "/models/piedra_plana.glb", scale: 0.5 },
-  { name: "señal", url: "/models/senal.glb", scale: 2 },
-  { name: "cochecito", url: "/models/cochecito.glb", scale: 0.5 },
-  { name: "person_1", url: "/models/person_1.glb", scale: 50 },
-  { name: "person_2", url: "/models/person_2.glb", scale: 0.02 },
-  { name: "person_3", url: "/models/person_3.glb" },
-] as const;
+// Utilidad: obtiene el nombre legible desde el path
+function toNameFromPath(path: string) {
+  const file = path.split("/").pop()!.replace(".glb", "");
+  return file.replace(/[_-]/g, " ").trim();
+}
+
+// 🔸 Función para asignar escala condicional
+function getScaleForPath(path: string): number {
+  if (path.includes("/characters/")) return 0.5; // 👈 si está dentro de la carpeta "characters"
+  return 1; // valor por defecto
+}
+
+// Genera automáticamente los defs
+export const prefabDefs: PrefabDef[] = Object.entries(modules).map(
+  ([path, url]) => ({
+    name: toNameFromPath(path),
+    url: String(url).replace(/^\.\./, ""), // Limpia prefijo relativo
+    scale: getScaleForPath(path), // Usa la escala condicional
+  })
+);
+
+// Tipo y mapeo de prefabs a función de instanciación
+export type FilePrefab = { name: string; create: () => THREE.Group };
 
 export const prefabs: FilePrefab[] = prefabDefs.map((d) => ({
   name: d.name,
   create: () => instantiatePrefab(d.name),
 }));
 
-// Llama esto una sola vez al inicio de la app:
+// Precarga todos los modelos una sola vez
 export async function preloadAllPrefabs() {
-  await preloadPrefabs(
-    prefabDefs as unknown as { name: string; url: string }[]
-  );
+  await preloadPrefabs(prefabDefs);
 }

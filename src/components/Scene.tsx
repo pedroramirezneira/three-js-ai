@@ -35,11 +35,7 @@ function Spawner({ instructions }: { instructions: BuildInstruction[] }) {
         const prefab = prefabs.find((p) => p.name === instr.type);
         if (prefab) {
           const obj = prefab.create();
-          obj.position.set(
-            instr.position.x,
-            instr.position.y,
-            instr.position.z
-          );
+          obj.position.set(instr.position.x, 0, instr.position.z);
           if ("rotation" in instr && instr.rotation)
             obj.rotation.set(
               instr.rotation.x,
@@ -90,35 +86,15 @@ export default function Scene() {
 
         {/* Piso */}
         <mesh rotation-x={-Math.PI / 2} receiveShadow>
-          <planeGeometry args={[100, 100]} />
+          <circleGeometry args={[50, 64]} />
           <meshStandardMaterial color={"#7ac36a"} />
         </mesh>
-        {/* Colliders invisibles alrededor del plano */}
-        <group>
-          {/* Pared norte */}
-          <mesh position={[0, 0.5, -50]} visible={false}>
-            <boxGeometry args={[100, 1, 1]} />
-            <meshBasicMaterial />
-          </mesh>
-
-          {/* Pared sur */}
-          <mesh position={[0, 0.5, 50]} visible={false}>
-            <boxGeometry args={[100, 1, 1]} />
-            <meshBasicMaterial />
-          </mesh>
-
-          {/* Pared oeste */}
-          <mesh position={[-50, 0.5, 0]} visible={false}>
-            <boxGeometry args={[1, 1, 100]} />
-            <meshBasicMaterial />
-          </mesh>
-
-          {/* Pared este */}
-          <mesh position={[50, 0.5, 0]} visible={false}>
-            <boxGeometry args={[1, 1, 100]} />
-            <meshBasicMaterial />
-          </mesh>
-        </group>
+        {/* Collider circular invisible */}
+        <mesh rotation-x={-Math.PI / 2} position={[0, 0.5, 0]} visible={false}>
+          {/* Un anillo fino que actúa como borde */}
+          <ringGeometry args={[49.5, 50, 64]} />
+          <meshBasicMaterial />
+        </mesh>
       </Canvas>
 
       <Chat onSend={handleSend} />
