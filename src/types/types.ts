@@ -40,3 +40,10 @@ export interface AssemblyInstructionV2 {
 
 // Unión que acepta ambas versiones
 export type BuildInstruction = SpawnInstructionV1 | AssemblyInstructionV2;
+
+export type PrefabDef = {
+  name: string;
+  url: string;
+  yOffset?: number;
+  scale?: number;
+};

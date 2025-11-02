@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useRef, useState, useEffect } from "react";
 import * as THREE from "three";
-import Car from "./Car";
+import Person from "./Person";
 import CameraFollow from "./CameraFollow";
 import { sendToN8n } from "../services/sendToN8n";
 import { prefabs, preloadAllPrefabs } from "./Prefabs";
@@ -9,17 +9,13 @@ import Chat from "./Chat";
 import { buildAssembly } from "./Parts";
 import type { BuildInstruction } from "../types/types";
 
-// Componente que agrega objetos a la escena
 function Spawner({ instructions }: { instructions: BuildInstruction[] }) {
   const groupRef = useRef<THREE.Group>(null);
-
   useEffect(() => {
     if (!groupRef.current) return;
-    // Limpia y vuelve a montar (simple y seguro)
     groupRef.current.clear();
 
     instructions.forEach((instr) => {
-      // v2: ensamblajes con partes
       if ("kind" in instr && instr.kind === "assembly") {
         const group = buildAssembly(instr.parts);
         group.position.set(
@@ -30,7 +26,6 @@ function Spawner({ instructions }: { instructions: BuildInstruction[] }) {
         groupRef.current!.add(group);
         return;
       }
-      // v1: prefabs clásicos
       if ("type" in instr) {
         const prefab = prefabs.find((p) => p.name === instr.type);
         if (prefab) {
@@ -53,47 +48,57 @@ function Spawner({ instructions }: { instructions: BuildInstruction[] }) {
 
 export default function Scene() {
   useEffect(() => {
-    preloadAllPrefabs().catch(console.error);
+    preloadAllPrefabs()
+      .then(() => {
+        setInitialized(true);
+      })
+      .catch(console.error);
   }, []);
 
-  const carRef = useRef<THREE.Group>(null);
+  const playerRef = useRef<THREE.Group>(null);
   const [instructions, setInstructions] = useState<BuildInstruction[]>([]);
+  const [initialized, setInitialized] = useState(false);
 
   const handleSend = async (message: string) => {
-    if (!carRef.current) return;
-
-    const carPos = carRef.current.position;
+    if (!playerRef.current) return;
+    const p = playerRef.current.position;
     const newInstructions = await sendToN8n(message, {
-      x: carPos.x,
-      y: carPos.y,
-      z: carPos.z,
+      x: p.x,
+      y: p.y,
+      z: p.z,
     });
-
     setInstructions((prev) => [...prev, ...newInstructions]);
   };
 
   return (
     <>
-      <Canvas shadows camera={{ position: [0, 5, 10], fov: 60 }}>
+      <Canvas shadows camera={{ position: [0, 14, 0], fov: 50 }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 20, 10]} intensity={1.5} castShadow />
 
         <Suspense fallback={null}>
-          <Car ref={carRef} />
-          <CameraFollow targetRef={carRef} />
+          {initialized && (
+            <>
+              <Person ref={playerRef} />
+              <CameraFollow
+                targetRef={playerRef}
+                height={14}
+                offsetZ={0}
+                smooth={0.15}
+                pitchDeg={-90}
+                yawDeg={0}
+              />
+            </>
+          )}
+          {/* Cámara fija en rotación (top-down), solo sigue la posición */}
+
           <Spawner instructions={instructions} />
         </Suspense>
 
-        {/* Piso */}
+        {/* Piso circular */}
         <mesh rotation-x={-Math.PI / 2} receiveShadow>
-          <circleGeometry args={[50, 64]} />
+          <circleGeometry args={[50, 128]} />
           <meshStandardMaterial color={"#7ac36a"} />
-        </mesh>
-        {/* Collider circular invisible */}
-        <mesh rotation-x={-Math.PI / 2} position={[0, 0.5, 0]} visible={false}>
-          {/* Un anillo fino que actúa como borde */}
-          <ringGeometry args={[49.5, 50, 64]} />
-          <meshBasicMaterial />
         </mesh>
       </Canvas>
 

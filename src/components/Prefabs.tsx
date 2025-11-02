@@ -1,14 +1,12 @@
 import * as THREE from "three";
-import {
-  instantiatePrefab,
-  preloadPrefabs,
-  type PrefabDef,
-} from "../services/assetLoader";
+import { instantiatePrefab, preloadPrefabs } from "../services/assetLoader";
+import type { PrefabDef } from "../types/types";
 
 // Importa automáticamente todos los modelos GLB de src/models (recursivo)
 const modules = import.meta.glob("../models/**/*.glb", {
   eager: true,
-  as: "url",
+  query: "?url",
+  import: "default",
 });
 
 // Utilidad: obtiene el nombre legible desde el path

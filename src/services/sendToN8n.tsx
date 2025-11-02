@@ -12,7 +12,7 @@ export async function sendToN8n(
     prefabsAvailable: prefabs.map((p) => p.name), // retrocompat
     partsAvailable, // NUEVO
     bounds: { xMin: -50, xMax: 50, zMin: -50, zMax: 50 },
-    maxObjects: 50, // NUEVO
+    maxObjects: 300, // NUEVO
     version: "v2", // NUEVO
   };
 

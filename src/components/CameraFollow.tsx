@@ -1,26 +1,49 @@
-import { useFrame, useThree } from "@react-three/fiber";
-import { useRef } from "react";
+import { useThree, useFrame } from "@react-three/fiber";
+import { useRef, useEffect } from "react";
 import * as THREE from "three";
 
-type Props = {
+interface Props {
   targetRef: React.RefObject<THREE.Object3D | null>;
-};
+  height?: number; // altura sobre el personaje
+  offsetZ?: number; // opcional: pequeño desplazamiento hacia atrás (mundo)
+  smooth?: number; // factor de lerp por frame
+  yawDeg?: number; // yaw fijo en grados (0 = alineado al mundo X/Z)
+  pitchDeg?: number; // pitch fijo (por defecto -90 = cenital puro)
+}
 
-export default function CameraFollow({ targetRef }: Props) {
+export default function CameraFollow({
+  targetRef,
+  height = 14,
+  offsetZ = 0,
+  smooth = 0.15,
+  yawDeg = 0,
+  pitchDeg = -90,
+}: Props) {
   const { camera } = useThree();
-  const offset = useRef(new THREE.Vector3(0, 8, -10)); // altura y distancia
-  const smoothPosition = useRef(new THREE.Vector3());
+  const desired = useRef(new THREE.Vector3());
+  const fixedQuat = useRef(new THREE.Quaternion());
+
+  useEffect(() => {
+    // rotación fija precomputada
+    const yaw = THREE.MathUtils.degToRad(yawDeg);
+    const pitch = THREE.MathUtils.degToRad(pitchDeg); // -90° = mira hacia abajo
+    const euler = new THREE.Euler(pitch, yaw, 0, "YXZ");
+    fixedQuat.current.setFromEuler(euler);
+  }, [yawDeg, pitchDeg]);
 
   useFrame(() => {
-    const target = targetRef?.current;
-    if (!target) return;
+    const t = targetRef.current;
+    if (!t) return;
 
-    const targetPos = target.position.clone();
-    const desiredPos = targetPos.clone().add(offset.current);
+    desired.current.set(
+      t.position.x,
+      t.position.y + height,
+      t.position.z + offsetZ
+    );
+    camera.position.lerp(desired.current, smooth);
 
-    smoothPosition.current.lerp(desiredPos, 0.1);
-    camera.position.copy(smoothPosition.current);
-    camera.lookAt(targetPos.x, targetPos.y + 1, targetPos.z);
+    // NO lookAt: mantener orientación fija
+    camera.quaternion.slerp(fixedQuat.current, 0.3);
   });
 
   return null;

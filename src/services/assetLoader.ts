@@ -4,6 +4,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { clone as skeletonClone } from "three/examples/jsm/utils/SkeletonUtils.js";
+import type { PrefabDef } from "../types/types";
 
 const manager = new THREE.LoadingManager();
 const gltfLoader = new GLTFLoader(manager);
@@ -15,13 +16,6 @@ gltfLoader.setDRACOLoader(draco);
 
 // (Opcional) Meshopt si exportas con esa compresión
 gltfLoader.setMeshoptDecoder(MeshoptDecoder);
-
-export type PrefabDef = {
-  name: string;
-  url: string;
-  yOffset?: number;
-  scale?: number;
-};
 
 const cache = new Map<string, THREE.Group>(); // instancia base
 const defs = new Map<string, PrefabDef>(); // metadata

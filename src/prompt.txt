@@ -50,16 +50,6 @@ Prefab (v1, preferido):
   "rotation": {"x": <float>, "y": <float>, "z": <float>}
 }
 
-
-Ensamblaje (v2, solo si necesario):
-
-{
-  "kind": "assembly",
-  "position": {"x": <float>, "y": <float>, "z": <float>},
-  "parts": [ { ... } ]
-}
-
-
 Cantidad:
 
 Si el usuario pide “cargar el mundo” o algo amplio: genera entre 10 y maxObjects elementos.
