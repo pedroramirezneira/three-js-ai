@@ -14,10 +14,10 @@ interface Props {
 export default function CameraFollow({
   targetRef,
   height = 14,
-  offsetZ = 0,
+  offsetZ = 15,
   smooth = 0.15,
   yawDeg = 0,
-  pitchDeg = -90,
+  pitchDeg = -45,
 }: Props) {
   const { camera } = useThree();
   const desired = useRef(new THREE.Vector3());

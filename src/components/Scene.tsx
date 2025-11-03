@@ -72,7 +72,7 @@ export default function Scene() {
 
   return (
     <>
-      <Canvas shadows camera={{ position: [0, 14, 0], fov: 50 }}>
+      <Canvas shadows camera={{ position: [0, 14, 15], rotateZ: 45, fov: 50 }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 20, 10]} intensity={1.5} castShadow />
 
@@ -83,9 +83,9 @@ export default function Scene() {
               <CameraFollow
                 targetRef={playerRef}
                 height={14}
-                offsetZ={0}
+                offsetZ={15}
                 smooth={0.15}
-                pitchDeg={-90}
+                pitchDeg={-45}
                 yawDeg={0}
               />
             </>
