@@ -40,6 +40,7 @@ Aplica pequeñas variaciones en color, escala o posición para mayor naturalidad
 
 Formato de salida:
 Devuelve solo un array JSON válido, sin texto adicional ni comentarios.
+NO agregues comentarios con //.
 Cada elemento debe ser uno de estos dos tipos:
 
 Prefab (v1, preferido):
